@@ -2,159 +2,145 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UPVOTE STUDIO | Reddit Marketplace</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RedditVault | Profile Marketplace</title>
 
 <style>
 *{box-sizing:border-box}
 body{
- margin:0;background:#090b16;color:white;
+ margin:0;background:#090a12;color:#fff;
  font-family:Arial,sans-serif;
 }
 header{
- padding:22px 7%;display:flex;
+ padding:19px 6%;display:flex;
  justify-content:space-between;align-items:center;
- background:#111329;border-bottom:1px solid #292447;
+ background:#121322;border-bottom:1px solid #302343;
  position:sticky;top:0;z-index:5;
 }
-.logo{font-size:25px;font-weight:900;color:#bb91ff}
-nav a{color:white;text-decoration:none;margin:0 12px}
+.logo{font-size:24px;font-weight:900;color:#bd91ff}
+nav a{color:#ddd;text-decoration:none;margin:12px;font-size:14px}
 button{
- border:0;padding:12px 18px;border-radius:10px;
- cursor:pointer;font-weight:bold;
- background:linear-gradient(90deg,#8255ff,#e45ac3);
- color:white;
+ cursor:pointer;border:0;border-radius:10px;
+ padding:12px 17px;color:white;font-weight:bold;
+ background:linear-gradient(100deg,#814cff,#d64dbd);
 }
 .hero{
- padding:90px 7%;text-align:center;
- background:
- radial-gradient(circle at 20% 20%,#5526a8 0,transparent 35%),
- radial-gradient(circle at 80% 70%,#7b235f 0,transparent 35%),
- linear-gradient(120deg,#17132d,#0b1020);
+ padding:85px 6%;text-align:center;
+ background:radial-gradient(ellipse at 50% 0%,#522b86,transparent 65%),#111322;
 }
-.hero h1{font-size:clamp(40px,7vw,75px);margin:10px}
-.hero h1 span{color:#c29aff}
-.hero p{color:#c5c2d6;font-size:18px;line-height:1.7}
-.hero button{margin-top:20px;font-size:16px}
-.badge{
- display:inline-block;padding:9px 15px;border-radius:30px;
- border:1px solid #a77cff;color:#d7bdff;
-}
+.hero small{color:#d2aaff;letter-spacing:3px}
+.hero h1{font-size:clamp(40px,7vw,72px);margin:18px 0}
+.hero h1 span{color:#bd91ff}
+.hero p{color:#bbb;line-height:1.7;font-size:17px}
+.hero button{margin-top:20px;font-size:15px}
 .stats{
- display:flex;justify-content:center;gap:55px;
- padding:30px;flex-wrap:wrap;background:#101326;
+ display:flex;justify-content:center;gap:65px;
+ padding:25px;background:#111322;flex-wrap:wrap;
 }
-.stats strong{display:block;font-size:27px;color:#c39cff}
-.stats small{color:#aaa}
-section{padding:65px 7%}
-h2{font-size:32px}
-.subtitle{color:#a9abc2}
-.filters{display:flex;gap:12px;flex-wrap:wrap;margin:25px 0}
+.stats strong{display:block;font-size:25px;color:#c49aff}
+.stats span{font-size:11px;color:#aaa}
+section{padding:55px 6%}
+h2{font-size:30px}
+.muted{color:#aaa}
+.filters{display:flex;gap:12px;margin:25px 0;flex-wrap:wrap}
 input,select{
- padding:14px;border-radius:10px;
- border:1px solid #37304f;background:#15172b;
- color:white;
+ padding:14px;border:1px solid #38304e;
+ border-radius:10px;background:#151626;color:white;
 }
-input{flex:1;min-width:200px}
+input{flex:1;min-width:180px}
 .grid{
- display:grid;grid-template-columns:repeat(3,1fr);
- gap:20px;
+ display:grid;grid-template-columns:repeat(4,1fr);gap:17px;
 }
 .card{
- background:linear-gradient(145deg,#1b1b35,#111526);
- border:1px solid #393050;border-radius:18px;
- padding:22px;transition:.3s;
+ background:linear-gradient(145deg,#1c1b31,#111421);
+ border:1px solid #37304c;border-radius:17px;
+ padding:18px;transition:.25s;cursor:pointer;
 }
 .card:hover{
- transform:translateY(-7px);
- border-color:#ad83ff;
- box-shadow:0 10px 30px #874dff30;
+ transform:translateY(-6px);
+ border-color:#ae82ff;
+ box-shadow:0 12px 30px #9c5bff30;
 }
-.icon{
- font-size:35px;background:#30214d;
- display:inline-grid;place-items:center;
- width:60px;height:60px;border-radius:15px;
+.avatar{
+ width:54px;height:54px;border-radius:16px;
+ background:linear-gradient(140deg,#955aff,#f06ab5);
+ display:grid;place-items:center;font-size:27px;
 }
-.tag{color:#d1b3ff;font-size:12px;margin-top:15px}
-.card h3{font-size:19px}
-.card p{color:#aaaec3;line-height:1.6;min-height:45px}
-.price{font-size:25px;color:#d0a8ff;font-weight:bold}
-.card button{width:100%;margin-top:12px}
-.steps{
- display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+.cardtop{display:flex;justify-content:space-between;align-items:center}
+.status{font-size:10px;color:#70e5a9}
+.card h3{margin:17px 0 5px;font-size:16px}
+.username{color:#bca1ff;font-size:12px}
+.karma{
+ display:flex;justify-content:space-between;
+ padding:12px 0;border-bottom:1px solid #ffffff15;
+ margin:10px 0;font-size:12px;color:#bbb;
 }
-.step{
- background:#17192d;padding:25px;
- border:1px solid #34304b;border-radius:15px;
+.price{font-size:23px;font-weight:bold;color:#d1aaff}
+.card button{width:100%;margin-top:13px}
+.label{font-size:10px;color:#bda0ed;letter-spacing:1px}
+.modalbg{
+ position:fixed;inset:0;background:#000c;
+ display:none;align-items:center;justify-content:center;
+ z-index:20;padding:15px;
 }
-.step h3{color:#c8a8ff}
-.payment{
- background:linear-gradient(120deg,#21173d,#151b32);
- border:1px solid #7050a4;border-radius:20px;
- padding:35px;
+.modal{
+ width:100%;max-width:490px;max-height:90vh;
+ overflow:auto;background:#17172a;
+ border:1px solid #8259c7;border-radius:20px;
+ padding:25px;position:relative;
 }
-.payment p{color:#c4c3d1;line-height:1.8}
-.coins{display:flex;gap:12px;flex-wrap:wrap}
-.coins span{
- padding:12px 18px;background:#30264b;
- border-radius:10px;
+.close{
+ position:absolute;right:17px;top:12px;
+ background:none;font-size:25px;padding:5px;
 }
+.details{
+ display:grid;grid-template-columns:1fr 1fr;
+ gap:10px;margin:20px 0;
+}
+.detail{
+ padding:14px;background:#24223a;border-radius:10px;
+}
+.detail small{color:#aaa;display:block;margin-bottom:7px}
+.detail strong{font-size:15px}
+.modal p{color:#bbb;line-height:1.6}
+.modal .price{margin:20px 0}
 footer{
- padding:35px 7%;text-align:center;
- background:#101326;color:#aaa;
+ text-align:center;padding:35px;background:#111322;
+ color:#999;font-size:12px;
 }
-.cartbox{
- position:fixed;right:15px;bottom:15px;
- background:#21173d;border:1px solid #9a70ff;
- border-radius:15px;padding:20px;
- z-index:10;max-width:300px;
- box-shadow:0 5px 30px #000;
+@media(max-width:950px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){
+ .grid{grid-template-columns:repeat(2,1fr)}
+ nav{display:none}
+ .stats{gap:25px}
 }
-.cartbox button{margin-top:10px}
+@media(max-width:430px){
+ .grid{grid-template-columns:1fr}
+}
 /* New Payment Modal Styles */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
+.payment-modal {
     display: none;
-    justify-content: center;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
     align-items: center;
-    z-index: 2000;
+    justify-content: center;
+    padding: 15px;
 }
-.modal-overlay.active {
+.payment-modal.active {
     display: flex;
 }
-.modal-content {
-    background: #15172b;
-    width: 90%;
-    max-width: 550px;
-    border-radius: 15px;
+.payment-box {
+    background: #17172a;
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid #8259c7;
+    border-radius: 20px;
     padding: 25px;
-    border: 1px solid #393050;
+    position: relative;
     max-height: 90vh;
     overflow-y: auto;
-}
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #393050;
-    padding-bottom: 15px;
-}
-.modal-header h2 {
-    margin: 0;
-    color: #bb91ff;
-}
-.close-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 28px;
-    cursor: pointer;
 }
 .form-group {
     margin-bottom: 15px;
@@ -163,20 +149,20 @@ footer{
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
-    color: #d1b3ff;
-    font-size: 14px;
+    color: #bd91ff;
+    font-size: 13px;
 }
-.form-group input, .form-group select {
+.form-group input {
     width: 100%;
     padding: 12px;
     border-radius: 8px;
-    border: 1px solid #393050;
-    background: #090b16;
+    border: 1px solid #38304e;
+    background: #090a12;
     color: white;
-    font-size: 16px;
+    font-size: 15px;
 }
 .form-group input:focus {
-    border-color: #bb91ff;
+    border-color: #bd91ff;
     outline: none;
 }
 .row {
@@ -189,9 +175,9 @@ footer{
 .pay-btn {
     width: 100%;
     padding: 15px;
-    font-size: 18px;
+    font-size: 16px;
     margin-top: 10px;
-    background: linear-gradient(90deg, #28a745, #20c997);
+    background: linear-gradient(100deg, #28a745, #20c997);
 }
 .pay-btn:disabled {
     background: #6c757d;
@@ -220,7 +206,7 @@ footer{
     display: flex;
     justify-content: space-between;
     padding: 10px 0;
-    border-bottom: 1px solid #393050;
+    border-bottom: 1px solid #38304e;
     font-size: 14px;
 }
 .cart-total-row {
@@ -229,15 +215,23 @@ footer{
     padding: 15px 0;
     font-weight: bold;
     font-size: 18px;
-    color: #bb91ff;
+    color: #bd91ff;
 }
 .admin-panel {
     display: none;
-    background: #101326;
-    border: 1px solid #393050;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: #121322;
+    border: 1px solid #38304e;
     border-radius: 15px;
     padding: 20px;
-    margin-top: 20px;
+    z-index: 200;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 .admin-panel.active {
     display: block;
@@ -249,27 +243,13 @@ footer{
     font-size: 12px;
 }
 .admin-table th, .admin-table td {
-    border: 1px solid #393050;
+    border: 1px solid #38304e;
     padding: 8px;
     text-align: left;
 }
 .admin-table th {
-    background: #1b1b35;
-    color: #bb91ff;
-}
-@media(max-width:800px){
- .grid{grid-template-columns:repeat(2,1fr)}
- .steps{grid-template-columns:1fr}
- nav a{display:none}
-}
-@media(max-width:520px){
- .grid{grid-template-columns:1fr}
- .hero{padding:65px 5%}
- section{padding:45px 5%}
- .row {
-    flex-direction: column;
-    gap: 0;
- }
+    background: #1c1b31;
+    color: #bd91ff;
 }
 </style>
 </head>
@@ -277,152 +257,41 @@ footer{
 <body>
 
 <header>
- <div class="logo">✦ UPVOTE STUDIO</div>
+ <div class="logo">✦ RedditVault</div>
  <nav>
   <a href="#home">Home</a>
   <a href="#market">Marketplace</a>
-  <a href="#payment">Payments</a>
  </nav>
- <button onclick="showCart()">🛒 Cart (<span id="count">0</span>)</button>
+ <button onclick="document.getElementById('market').scrollIntoView()">
+  Explore
+ </button>
 </header>
 
 <div class="hero" id="home">
- <span class="badge">✦ PREMIUM REDDIT GROWTH MARKETPLACE</span>
- <h1>Grow Smarter.<br><span>Connect Better.</span></h1>
+ <small>✦ PREMIUM PROFILE CATALOGUE</small>
+ <h1>Explore <span>RedditVault</span></h1>
  <p>
-  Discover premium Reddit community services,
-  content strategies and marketing solutions.
-  Your next big idea starts here.
+  Explore beautifully organised Reddit-style sample profiles.
+  Browse karma tiers and discover profile details.
  </p>
  <button onclick="document.getElementById('market').scrollIntoView()">
-  EXPLORE MARKETPLACE →
+  EXPLORE PROFILES →
  </button>
 </div>
 
 <div class="stats">
- <div><strong>100+</strong><small>DEMO LISTINGS</small></div>
- <div><strong>06</strong><small>CATEGORIES</small></div>
- <div><strong>24/7</strong><small>ONLINE ACCESS</small></div>
+ <div><strong>100</strong><span>PROFILE SAMPLES</span></div>
+ <div><strong>500+</strong><span>KARMA TIERS</span></div>
+ <div><strong>$2–$9</strong><span>DISPLAYED PRICES</span></div>
 </div>
 
 <section id="market">
- <h2>✦ Explore Marketplace</h2>
- <p class="subtitle">Find the right service for your next project.</p>
+ <h2>✦ Profile Catalogue</h2>
+ <p class="muted">Browse sample profiles and click any card for details.</p>
 
  <div class="filters">
-  <input id="search" placeholder="Search services..." oninput="render()">
-  <select id="category" onchange="render()">
-   <option value="All">All Categories</option>
-   <option>Community</option>
-   <option>Content</option>
-   <option>Research</option>
-   <option>Marketing</option>
-   <option>Design</option>
-   <option>Consulting</option>
-  </select>
- </div>
-
- <div class="grid" id="products"></div>
-</section>
-
-<section>
- <h2>How It Works</h2>
- <div class="steps">
-  <div class="step">
-   <h3>01. Explore</h3>
-   <p>Discover services and browse available options.</p>
-  </div>
-  <div class="step">
-   <h3>02. Select</h3>
-   <p>Add your preferred services to your shopping cart.</p>
-  </div>
-  <div class="step">
-   <h3>03. Connect</h3>
-   <p>Contact the seller to confirm service details.</p>
-  </div>
- </div>
-</section>
-
-<section id="payment">
- <div class="payment">
-  <h2>💳 Payment Options</h2>
-  <p>
-   Choose your preferred payment method.
-   Actual payments require verified payment details
-   and a secure payment provider.
-  </p>
-  <div class="coins">
-   <span>₿ Bitcoin</span>
-   <span>₮ USDT</span>
-   <span>Ξ Ethereum</span>
-   <span>🏦 Bank Transfer</span>
-  </div>
-  <p><b>Wallet:</b> Not configured</p>
-  <p style="color:#ffd27a">
-   Demo only. No payment is collected by this website.
-  </p>
- </div>
-</section>
-
-<footer>
- <h2>✦ UPVOTE STUDIO</h2>
- <p>Independent Reddit services marketplace demo.</p>
- <p>Not affiliated with Reddit, Inc.</p>
- © 2026 UPVOTE STUDIO
-</footer>
-
-<div class="cartbox">
- <b>🛒 Your Cart</b>
- <p id="cartitems">No services selected.</p>
- <b id="total">Total: $0</b><br>
- <button onclick="showCart()">View Cart</button>
-</div>
-
-<!-- Payment Modal -->
-<div class="modal-overlay" id="paymentModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>💳 Checkout</h2>
-            <button class="close-btn" onclick="closePaymentModal()">&times;</button>
-        </div>
-
-        <div id="cartSummary">
-            <!-- Cart items will be injected here -->
-        </div>
-
-        <form id="paymentForm">
-            <div class="form-group">
-                <label>Card Number</label>
-                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" inputmode="numeric" autocomplete="cc-number" required>
-            </div>
-            <div class="form-group">
-                <label>Cardholder Name</label>
-                <input type="text" id="cardName" placeholder="John Doe" autocomplete="cc-name" required>
-            </div>
-            <div class="row">
-                <div class="form-group">
-                    <label>Expiry (MM/YY)</label>
-                    <input type="text" id="expiryDate" placeholder="MM/YY" inputmode="numeric" autocomplete="cc-exp" required>
-                </div>
-                <div class="form-group">
-                    <label>CVV</label>
-                    <input type="password" id="cvv" placeholder="123" inputmode="numeric" autocomplete="cc-csc" maxlength="4" required>
-                </div>
-            </div>
-            <button type="submit" class="pay-btn" id="payBtn">Pay Now</button>
-            <div id="statusMsg" class="status-msg"></div>
-        </form>
-    </div>
-</div>
-
-<!-- Admin Panel (Hidden by default) -->
-<div style="position: fixed; bottom: 20px; left: 20px; z-index: 100;">
-    <button onclick="toggleAdminPanel()" style="background: #3498db;">🛡️ Admin</button>
-</div>
-
-<div class="admin-panel" id="adminPanel" style="position: fixed; bottom: 20px; left: 20px; width: 80%; max-width: 600px; max-height: 80vh; overflow-y: auto; z-index: 101;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <h3 style="margin: 0; color: #bb91ff;">Admin Dashboard - Captured Payments</h3>
-        <button onclick="closeAdminPanel()" style="padding: 5px 10px;">Close</button>
-    </div>
-    <button onclick="clearAdminData()" style="background: #dc
+  <input id="search" placeholder="Search username or profile ID..." oninput="render()">
+  <select id="karma" onchange="render()">
+   <option value="all">All Karma</option>
+   <option value="500">500 Karma</option>
+   <option value="1000">1K
