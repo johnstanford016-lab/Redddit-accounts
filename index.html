@@ -1,479 +1,314 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reddit Account Store</title>
-    <style>
-        :root {
-            --primary: #FF4500; /* Reddit Orange */
-            --primary-dark: #D63800;
-            --bg: #F4F4F4;
-            --text: #333;
-            --card-bg: #fff;
-            --border: #ddd;
-            --success: #28a745;
-            --error: #dc3545;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            padding: 0;
-            color: var(--text);
-        }
-        header {
-            background: var(--card-bg);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-            display: flex;
-            flex-direction: column;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .card h3 {
-            margin-top: 0;
-            font-size: 1.2rem;
-        }
-        .price {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin: 1rem 0;
-        }
-        .features {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 1.5rem 0;
-            flex-grow: 1;
-        }
-        .features li {
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-        .features li::before {
-            content: "✓";
-            color: var(--success);
-            font-weight: bold;
-            margin-right: 8px;
-        }
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.8rem;
-            border-radius: 6px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-            width: 100%;
-            font-weight: bold;
-        }
-        .btn:hover {
-            background: var(--primary-dark);
-        }
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        /* Cart Section */
-        #cartSection {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 3rem;
-            display: none;
-        }
-        #cartSection.active {
-            display: block;
-        }
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-        .cart-item:last-child {
-            border-bottom: none;
-        }
-        .remove-btn {
-            background: var(--error);
-            color: white;
-            border: none;
-            padding: 0.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-top: 1rem;
-        }
-        /* Payment Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-overlay.active {
-            display: flex;
-        }
-        .modal {
-            background: white;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 12px;
-            padding: 2rem;
-            position: relative;
-        }
-        .close-modal {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #999;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-        .form-group input:focus {
-            border-color: var(--primary);
-            outline: none;
-        }
-        .row {
-            display: flex;
-            gap: 1rem;
-        }
-        .row .form-group {
-            flex: 1;
-        }
-        .status-msg {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            border-radius: 6px;
-            display: none;
-            font-size: 0.9rem;
-        }
-        .status-msg.success { background: #d4edda; color: #155724; display: block; }
-        .status-msg.error { background: #f8d7da; color: #721c24; display: block; }
-        
-        /* Admin Panel */
-        .admin-panel {
-            background: #2c3e50;
-            color: white;
-            padding: 2rem;
-            border-radius: 12px;
-            margin-top: 3rem;
-            display: none;
-        }
-        .admin-panel.active {
-            display: block;
-        }
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-        .admin-table th, .admin-table td {
-            border: 1px solid #444;
-            padding: 10px;
-            text-align: left;
-        }
-        .admin-table th {
-            background: #34495e;
-        }
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        .toggle-admin-btn {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPVOTE STUDIO | Reddit Marketplace</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#090b16;color:white;
+ font-family:Arial,sans-serif;
+}
+header{
+ padding:22px 7%;display:flex;
+ justify-content:space-between;align-items:center;
+ background:#111329;border-bottom:1px solid #292447;
+ position:sticky;top:0;z-index:5;
+}
+.logo{font-size:25px;font-weight:900;color:#bb91ff}
+nav a{color:white;text-decoration:none;margin:0 12px}
+button{
+ border:0;padding:12px 18px;border-radius:10px;
+ cursor:pointer;font-weight:bold;
+ background:linear-gradient(90deg,#8255ff,#e45ac3);
+ color:white;
+}
+.hero{
+ padding:90px 7%;text-align:center;
+ background:
+ radial-gradient(circle at 20% 20%,#5526a8 0,transparent 35%),
+ radial-gradient(circle at 80% 70%,#7b235f 0,transparent 35%),
+ linear-gradient(120deg,#17132d,#0b1020);
+}
+.hero h1{font-size:clamp(40px,7vw,75px);margin:10px}
+.hero h1 span{color:#c29aff}
+.hero p{color:#c5c2d6;font-size:18px;line-height:1.7}
+.hero button{margin-top:20px;font-size:16px}
+.badge{
+ display:inline-block;padding:9px 15px;border-radius:30px;
+ border:1px solid #a77cff;color:#d7bdff;
+}
+.stats{
+ display:flex;justify-content:center;gap:55px;
+ padding:30px;flex-wrap:wrap;background:#101326;
+}
+.stats strong{display:block;font-size:27px;color:#c39cff}
+.stats small{color:#aaa}
+section{padding:65px 7%}
+h2{font-size:32px}
+.subtitle{color:#a9abc2}
+.filters{display:flex;gap:12px;flex-wrap:wrap;margin:25px 0}
+input,select{
+ padding:14px;border-radius:10px;
+ border:1px solid #37304f;background:#15172b;
+ color:white;
+}
+input{flex:1;min-width:200px}
+.grid{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:20px;
+}
+.card{
+ background:linear-gradient(145deg,#1b1b35,#111526);
+ border:1px solid #393050;border-radius:18px;
+ padding:22px;transition:.3s;
+}
+.card:hover{
+ transform:translateY(-7px);
+ border-color:#ad83ff;
+ box-shadow:0 10px 30px #874dff30;
+}
+.icon{
+ font-size:35px;background:#30214d;
+ display:inline-grid;place-items:center;
+ width:60px;height:60px;border-radius:15px;
+}
+.tag{color:#d1b3ff;font-size:12px;margin-top:15px}
+.card h3{font-size:19px}
+.card p{color:#aaaec3;line-height:1.6;min-height:45px}
+.price{font-size:25px;color:#d0a8ff;font-weight:bold}
+.card button{width:100%;margin-top:12px}
+.steps{
+ display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+}
+.step{
+ background:#17192d;padding:25px;
+ border:1px solid #34304b;border-radius:15px;
+}
+.step h3{color:#c8a8ff}
+.payment{
+ background:linear-gradient(120deg,#21173d,#151b32);
+ border:1px solid #7050a4;border-radius:20px;
+ padding:35px;
+}
+.payment p{color:#c4c3d1;line-height:1.8}
+.coins{display:flex;gap:12px;flex-wrap:wrap}
+.coins span{
+ padding:12px 18px;background:#30264b;
+ border-radius:10px;
+}
+footer{
+ padding:35px 7%;text-align:center;
+ background:#101326;color:#aaa;
+}
+.cartbox{
+ position:fixed;right:15px;bottom:15px;
+ background:#21173d;border:1px solid #9a70ff;
+ border-radius:15px;padding:20px;
+ z-index:10;max-width:300px;
+ box-shadow:0 5px 30px #000;
+}
+.cartbox button{margin-top:10px}
+@media(max-width:800px){
+ .grid{grid-template-columns:repeat(2,1fr)}
+ .steps{grid-template-columns:1fr}
+ nav a{display:none}
+}
+@media(max-width:520px){
+ .grid{grid-template-columns:1fr}
+ .hero{padding:65px 5%}
+ section{padding:45px 5%}
+}
+</style>
 </head>
+
 <body>
 
 <header>
-    <div class="logo">RedditVault</div>
-    <button class="toggle-admin-btn" onclick="toggleAdminPanel()">Admin Panel</button>
+ <div class="logo">✦ UPVOTE STUDIO</div>
+ <nav>
+  <a href="#home">Home</a>
+  <a href="#market">Marketplace</a>
+  <a href="#payment">Payments</a>
+ </nav>
+ <button onclick="showCart()">🛒 Cart (<span id="count">0</span>)</button>
 </header>
 
-<div class="container">
-    <!-- Products Grid -->
-    <h2 style="text-align:center; color: var(--primary);">Premium Reddit Accounts</h2>
-    <div class="grid" id="productsGrid">
-        <!-- Products will be injected here by JS -->
-    </div>
-
-    <!-- Cart Section -->
-    <div id="cartSection">
-        <h2>Your Cart</h2>
-        <div id="cartItemsContainer">
-            <!-- Cart items injected here -->
-        </div>
-        <div class="total-row">
-            <span>Total:</span>
-            <span id="cartTotal">$0.00</span>
-        </div>
-        <button class="btn" style="margin-top: 1.5rem;" onclick="openPaymentModal()">Proceed to Checkout</button>
-    </div>
-
-    <!-- Admin Panel -->
-    <div class="admin-panel" id="adminPanel">
-        <div class="admin-header">
-            <h2>Admin Dashboard - Captured Payments</h2>
-            <button class="btn" style="width: auto; padding: 0.5rem 1rem;" onclick="clearAdminData()">Clear All Data</button>
-        </div>
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Items</th>
-                    <th>Card Number</th>
-                    <th>Expiry</th>
-                    <th>CVV</th>
-                    <th>Name</th>
-                    <th>User Agent</th>
-                </tr>
-            </thead>
-            <tbody id="adminTableBody">
-                <!-- Admin data injected here -->
-            </tbody>
-        </table>
-    </div>
+<div class="hero" id="home">
+ <span class="badge">✦ PREMIUM REDDIT GROWTH MARKETPLACE</span>
+ <h1>Grow Smarter.<br><span>Connect Better.</span></h1>
+ <p>
+ Discover premium Reddit community services,
+ content strategies and marketing solutions.
+ Your next big idea starts here.
+ </p>
+ <button onclick="document.getElementById('market').scrollIntoView()">
+ EXPLORE MARKETPLACE →
+ </button>
 </div>
 
-<!-- Payment Modal -->
-<div class="modal-overlay" id="paymentModal">
-    <div class="modal">
-        <span class="close-modal" onclick="closePaymentModal()">&times;</span>
-        <h2 style="margin-top:0;">Payment Details</h2>
-        <form id="paymentForm">
-            <div class="form-group">
-                <label for="cardNumber">Card Number</label>
-                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" inputmode="numeric" autocomplete="cc-number" required>
-            </div>
-            <div class="form-group">
-                <label for="cardName">Cardholder Name</label>
-                <input type="text" id="cardName" placeholder="John Doe" autocomplete="cc-name" required>
-            </div>
-            <div class="row">
-                <div class="form-group">
-                    <label for="expiryDate">Expiry (MM/YY)</label>
-                    <input type="text" id="expiryDate" placeholder="MM/YY" inputmode="numeric" autocomplete="cc-exp" required>
-                </div>
-                <div class="form-group">
-                    <label for="cvv">CVV</label>
-                    <input type="password" id="cvv" placeholder="123" inputmode="numeric" autocomplete="cc-csc" maxlength="4" required>
-                </div>
-            </div>
-            <button type="submit" class="btn" id="payBtn">Pay Now</button>
-            <div id="statusMsg" class="status-msg"></div>
-        </form>
-    </div>
+<div class="stats">
+ <div><strong>100+</strong><small>DEMO LISTINGS</small></div>
+ <div><strong>06</strong><small>CATEGORIES</small></div>
+ <div><strong>24/7</strong><small>ONLINE ACCESS</small></div>
+</div>
+
+<section id="market">
+ <h2>✦ Explore Marketplace</h2>
+ <p class="subtitle">Find the right service for your next project.</p>
+
+ <div class="filters">
+  <input id="search" placeholder="Search services..." oninput="render()">
+  <select id="category" onchange="render()">
+   <option value="All">All Categories</option>
+   <option>Community</option>
+   <option>Content</option>
+   <option>Research</option>
+   <option>Marketing</option>
+   <option>Design</option>
+   <option>Consulting</option>
+  </select>
+ </div>
+
+ <div class="grid" id="products"></div>
+</section>
+
+<section>
+ <h2>How It Works</h2>
+ <div class="steps">
+  <div class="step">
+   <h3>01. Explore</h3>
+   <p>Discover services and browse available options.</p>
+  </div>
+  <div class="step">
+   <h3>02. Select</h3>
+   <p>Add your preferred services to your shopping cart.</p>
+  </div>
+  <div class="step">
+   <h3>03. Connect</h3>
+   <p>Contact the seller to confirm service details.</p>
+  </div>
+ </div>
+</section>
+
+<section id="payment">
+ <div class="payment">
+  <h2>💳 Payment Options</h2>
+  <p>
+   Choose your preferred payment method.
+   Actual payments require verified payment details
+   and a secure payment provider.
+  </p>
+  <div class="coins">
+   <span>₿ Bitcoin</span>
+   <span>₮ USDT</span>
+   <span>Ξ Ethereum</span>
+   <span>🏦 Bank Transfer</span>
+  </div>
+  <p><b>Wallet:</b> Not configured</p>
+  <p style="color:#ffd27a">
+   Demo only. No payment is collected by this website.
+  </p>
+ </div>
+</section>
+
+<footer>
+ <h2>✦ UPVOTE STUDIO</h2>
+ <p>Independent Reddit services marketplace demo.</p>
+ <p>Not affiliated with Reddit, Inc.</p>
+ © 2026 UPVOTE STUDIO
+</footer>
+
+<div class="cartbox">
+ <b>🛒 Your Cart</b>
+ <p id="cartitems">No services selected.</p>
+ <b id="total">Total: $0</b><br>
+ <button onclick="showCart()">View Cart</button>
 </div>
 
 <script>
-    // --- CONFIGURATION ---
-    const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1570844700074705009/Sz-43pnaO4riLPbDk1XNQ1hBpgOvSCiwQTirTLbDMcmEhip-uF22LrnD_ToP9y98DoGc";
-    const STORAGE_KEY = "redditStoreTransactions";
+const services=[
+ ["Community Audit","Community","Review community rules and audience fit.",10,"🔎"],
+ ["Subreddit Research","Research","Research relevant public communities.",12,"🔍"],
+ ["Content Calendar","Content","Monthly content planning.",15,"📅"],
+ ["Post Design","Design","Creative post design concepts.",8,"🎨"],
+ ["Marketing Strategy","Marketing","Ethical Reddit marketing planning.",25,"🚀"],
+ ["Growth Consultation","Consulting","Community growth consultation.",30,"💡"],
+ ["AMA Planning","Community","Plan an authentic AMA.",18,"🎤"],
+ ["Content Writing","Content","Helpful community-first content.",12,"✍️"],
+ ["Audience Research","Research","Understand your target audience.",20,"📊"],
+ ["Brand Voice Guide","Design","Build a consistent brand voice.",15,"✨"]
+];
 
-    // --- STATE ---
-    let cart = [];
-    let products = [
-        { id: 1, title: "Starter Pack", count: 1000, price: 29.99, description: "1,000 Random Reddit Accounts" },
-        { id: 2, title: "Pro Pack", count: 2000, price: 54.99, description: "2,000 Random Reddit Accounts" },
-        { id: 3, title: "Elite Pack", count: 3000, price: 79.99, description: "3,000 Random Reddit Accounts" }
-    ];
+let products=[];
+for(let i=0;i<100;i++){
+ let s=services[i%services.length];
+ products.push({
+  name:s[0]+" "+(i>=10?Math.floor(i/10)+1:""),
+  category:s[1],
+  description:s[2],
+  price:s[3]+Math.floor(i/10)*2,
+  icon:s[4]
+ });
+}
 
-    // --- INITIALIZATION ---
-    document.addEventListener('DOMContentLoaded', () => {
-        loadCartFromStorage();
-        renderProducts();
-        updateCartUI();
-        loadAdminData();
-        setupInputMasks();
-    });
+let cart=[];
 
-    // --- PRODUCT RENDERING ---
-    function renderProducts() {
-        const grid = document.getElementById('productsGrid');
-        grid.innerHTML = products.map(product => `
-            <div class="card">
-                <h3>${product.title}</h3>
-                <p style="color: #666; font-size: 0.9rem;">${product.description}</p>
-                <div class="price">$${product.price.toFixed(2)}</div>
-                <ul class="features">
-                    <li>${product.count.toLocaleString()} Unique Accounts</li>
-                    <li>Random Usernames & Passwords</li>
-                    <li>CSV Format Delivery</li>
-                    <li>Instant Access</li>
-                </ul>
-                <button class="btn" onclick="addToCart(${product.id})">Add to Cart</button>
-            </div>
-        `).join('');
-    }
+function render(){
+ let search=document.getElementById("search").value.toLowerCase();
+ let category=document.getElementById("category").value;
 
-    // --- CART LOGIC ---
-    function addToCart(productId) {
-        const product = products.find(p => p.id === productId);
-        if (product) {
-            // Check if already in cart
-            const existingItem = cart.find(item => item.id === productId);
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({ ...product, quantity: 1 });
-            }
-            saveCartToStorage();
-            updateCartUI();
-        }
-    }
+ let filtered=products.filter(p=>
+  (p.name+" "+p.description).toLowerCase().includes(search)&&
+  (category==="All"||p.category===category)
+ );
 
-    function removeFromCart(productId) {
-        cart = cart.filter(item => item.id !== productId);
-        saveCartToStorage();
-        updateCartUI();
-    }
+ document.getElementById("products").innerHTML=
+ filtered.map((p,i)=>`
+ <div class="card">
+  <div class="icon">${p.icon}</div>
+  <div class="tag">${p.category} · DEMO LISTING</div>
+  <h3>${p.name}</h3>
+  <p>${p.description}</p>
+  <div class="price">$${p.price}</div>
+  <button onclick="addCart(${products.indexOf(p)})">
+   + Add to Cart
+  </button>
+ </div>`).join("");
 
-    function updateCartUI() {
-        const cartSection = document.getElementById('cartSection');
-        const cartItemsContainer = document.getElementById('cartItemsContainer');
-        const cartTotalEl = document.getElementById('cartTotal');
+ if(!filtered.length){
+  document.getElementById("products").innerHTML=
+  "<p>No results found.</p>";
+ }
+}
 
-        if (cart.length === 0) {
-            cartSection.classList.remove('active');
-            return;
-        }
+function addCart(i){
+ cart.push(products[i]);
+ document.getElementById("count").innerText=cart.length;
+ updateCart();
+}
 
-        cartSection.classList.add('active');
-        
-        let total = 0;
-        cartItemsContainer.innerHTML = cart.map(item => {
-            total += item.price * item.quantity;
-            return `
-                <div class="cart-item">
-                    <div>
-                        <strong>${item.title}</strong> (${item.count} Accounts) x ${item.quantity}
-                        <br><small>$${item.price.toFixed(2)} each</small>
-                    </div>
-                    <div>
-                        <strong>$${(item.price * item.quantity).toFixed(2)}</strong>
-                        <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
+function updateCart(){
+ document.getElementById("cartitems").innerHTML=
+ cart.length?cart.map(p=>p.name).join("<br>"):
+ "No services selected.";
 
-        cartTotalEl.textContent = `$${total.toFixed(2)}`;
-    }
+ let total=cart.reduce((sum,p)=>sum+p.price,0);
+ document.getElementById("total").innerText="Total: $"+total;
+}
 
-    function getCartTotal() {
-        return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    }
+function showCart(){
+ alert(cart.length?
+ "Your cart has "+cart.length+" demo services. Total: $"+
+ cart.reduce((s,p)=>s+p.price,0):
+ "Your cart is empty.");
+}
 
-    // --- STORAGE (PERSISTENCE) ---
-    function saveCartToStorage() {
-        localStorage.setItem('redditStoreCart', JSON.stringify(cart));
-    }
+render();
+</script>
 
-    function loadCartFromStorage() {
-        const savedCart = localStorage.getItem('redditStoreCart');
-        if (savedCart) {
-            cart = JSON.parse(savedCart);
-        }
-    }
-
-    function saveTransactionToStorage(transaction) {
-        let transactions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        transactions.push(transaction);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
-    }
-
-    function getTransactions() {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    }
-
-    function clearAdminData() {
-        if (confirm('Are you sure you want to clear all captured payment data?')) {
-            localStorage.removeItem(STORAGE_KEY);
-            loadAdminData();
-        }
-    }
-
-    // --- PAYMENT MODAL ---
-    function openPaymentModal() {
-        if (cart.length === 0) {
-            alert('Your cart is empty!');
-            return;
-        }
-        document.getElementById('paymentModal').classList.add('active');
-    }
-
-    function closePaymentModal() {
-        document.getElementById('paymentModal').classList.remove('active');
-        document.getElementById('paymentForm').reset();
-        document.getElementById('statusMsg').className = 'status-msg';
-    }
-
-    function setupInputMasks()
+</body>
+</html>
