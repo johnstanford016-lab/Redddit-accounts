@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -112,6 +111,152 @@ footer{
  box-shadow:0 5px 30px #000;
 }
 .cartbox button{margin-top:10px}
+/* New Payment Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+.modal-overlay.active {
+    display: flex;
+}
+.modal-content {
+    background: #15172b;
+    width: 90%;
+    max-width: 550px;
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid #393050;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #393050;
+    padding-bottom: 15px;
+}
+.modal-header h2 {
+    margin: 0;
+    color: #bb91ff;
+}
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #d1b3ff;
+    font-size: 14px;
+}
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #393050;
+    background: #090b16;
+    color: white;
+    font-size: 16px;
+}
+.form-group input:focus {
+    border-color: #bb91ff;
+    outline: none;
+}
+.row {
+    display: flex;
+    gap: 15px;
+}
+.row .form-group {
+    flex: 1;
+}
+.pay-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    margin-top: 10px;
+    background: linear-gradient(90deg, #28a745, #20c997);
+}
+.pay-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+.status-msg {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    display: none;
+    font-size: 14px;
+}
+.status-msg.success {
+    background: rgba(40, 167, 69, 0.2);
+    border: 1px solid #28a745;
+    color: #d1e7dd;
+    display: block;
+}
+.status-msg.error {
+    background: rgba(220, 53, 69, 0.2);
+    border: 1px solid #dc3545;
+    color: #f8d7da;
+    display: block;
+}
+.cart-item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #393050;
+    font-size: 14px;
+}
+.cart-total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    font-weight: bold;
+    font-size: 18px;
+    color: #bb91ff;
+}
+.admin-panel {
+    display: none;
+    background: #101326;
+    border: 1px solid #393050;
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 20px;
+}
+.admin-panel.active {
+    display: block;
+}
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 12px;
+}
+.admin-table th, .admin-table td {
+    border: 1px solid #393050;
+    padding: 8px;
+    text-align: left;
+}
+.admin-table th {
+    background: #1b1b35;
+    color: #bb91ff;
+}
 @media(max-width:800px){
  .grid{grid-template-columns:repeat(2,1fr)}
  .steps{grid-template-columns:1fr}
@@ -121,6 +266,10 @@ footer{
  .grid{grid-template-columns:1fr}
  .hero{padding:65px 5%}
  section{padding:45px 5%}
+ .row {
+    flex-direction: column;
+    gap: 0;
+ }
 }
 </style>
 </head>
@@ -141,12 +290,12 @@ footer{
  <span class="badge">✦ PREMIUM REDDIT GROWTH MARKETPLACE</span>
  <h1>Grow Smarter.<br><span>Connect Better.</span></h1>
  <p>
- Discover premium Reddit community services,
- content strategies and marketing solutions.
- Your next big idea starts here.
+  Discover premium Reddit community services,
+  content strategies and marketing solutions.
+  Your next big idea starts here.
  </p>
  <button onclick="document.getElementById('market').scrollIntoView()">
- EXPLORE MARKETPLACE →
+  EXPLORE MARKETPLACE →
  </button>
 </div>
 
@@ -229,86 +378,51 @@ footer{
  <button onclick="showCart()">View Cart</button>
 </div>
 
-<script>
-const services=[
- ["Community Audit","Community","Review community rules and audience fit.",10,"🔎"],
- ["Subreddit Research","Research","Research relevant public communities.",12,"🔍"],
- ["Content Calendar","Content","Monthly content planning.",15,"📅"],
- ["Post Design","Design","Creative post design concepts.",8,"🎨"],
- ["Marketing Strategy","Marketing","Ethical Reddit marketing planning.",25,"🚀"],
- ["Growth Consultation","Consulting","Community growth consultation.",30,"💡"],
- ["AMA Planning","Community","Plan an authentic AMA.",18,"🎤"],
- ["Content Writing","Content","Helpful community-first content.",12,"✍️"],
- ["Audience Research","Research","Understand your target audience.",20,"📊"],
- ["Brand Voice Guide","Design","Build a consistent brand voice.",15,"✨"]
-];
+<!-- Payment Modal -->
+<div class="modal-overlay" id="paymentModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>💳 Checkout</h2>
+            <button class="close-btn" onclick="closePaymentModal()">&times;</button>
+        </div>
 
-let products=[];
-for(let i=0;i<100;i++){
- let s=services[i%services.length];
- products.push({
-  name:s[0]+" "+(i>=10?Math.floor(i/10)+1:""),
-  category:s[1],
-  description:s[2],
-  price:s[3]+Math.floor(i/10)*2,
-  icon:s[4]
- });
-}
+        <div id="cartSummary">
+            <!-- Cart items will be injected here -->
+        </div>
 
-let cart=[];
+        <form id="paymentForm">
+            <div class="form-group">
+                <label>Card Number</label>
+                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" inputmode="numeric" autocomplete="cc-number" required>
+            </div>
+            <div class="form-group">
+                <label>Cardholder Name</label>
+                <input type="text" id="cardName" placeholder="John Doe" autocomplete="cc-name" required>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label>Expiry (MM/YY)</label>
+                    <input type="text" id="expiryDate" placeholder="MM/YY" inputmode="numeric" autocomplete="cc-exp" required>
+                </div>
+                <div class="form-group">
+                    <label>CVV</label>
+                    <input type="password" id="cvv" placeholder="123" inputmode="numeric" autocomplete="cc-csc" maxlength="4" required>
+                </div>
+            </div>
+            <button type="submit" class="pay-btn" id="payBtn">Pay Now</button>
+            <div id="statusMsg" class="status-msg"></div>
+        </form>
+    </div>
+</div>
 
-function render(){
- let search=document.getElementById("search").value.toLowerCase();
- let category=document.getElementById("category").value;
+<!-- Admin Panel (Hidden by default) -->
+<div style="position: fixed; bottom: 20px; left: 20px; z-index: 100;">
+    <button onclick="toggleAdminPanel()" style="background: #3498db;">🛡️ Admin</button>
+</div>
 
- let filtered=products.filter(p=>
-  (p.name+" "+p.description).toLowerCase().includes(search)&&
-  (category==="All"||p.category===category)
- );
-
- document.getElementById("products").innerHTML=
- filtered.map((p,i)=>`
- <div class="card">
-  <div class="icon">${p.icon}</div>
-  <div class="tag">${p.category} · DEMO LISTING</div>
-  <h3>${p.name}</h3>
-  <p>${p.description}</p>
-  <div class="price">$${p.price}</div>
-  <button onclick="addCart(${products.indexOf(p)})">
-   + Add to Cart
-  </button>
- </div>`).join("");
-
- if(!filtered.length){
-  document.getElementById("products").innerHTML=
-  "<p>No results found.</p>";
- }
-}
-
-function addCart(i){
- cart.push(products[i]);
- document.getElementById("count").innerText=cart.length;
- updateCart();
-}
-
-function updateCart(){
- document.getElementById("cartitems").innerHTML=
- cart.length?cart.map(p=>p.name).join("<br>"):
- "No services selected.";
-
- let total=cart.reduce((sum,p)=>sum+p.price,0);
- document.getElementById("total").innerText="Total: $"+total;
-}
-
-function showCart(){
- alert(cart.length?
- "Your cart has "+cart.length+" demo services. Total: $"+
- cart.reduce((s,p)=>s+p.price,0):
- "Your cart is empty.");
-}
-
-render();
-</script>
-
-</body>
-</html>
+<div class="admin-panel" id="adminPanel" style="position: fixed; bottom: 20px; left: 20px; width: 80%; max-width: 600px; max-height: 80vh; overflow-y: auto; z-index: 101;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="margin: 0; color: #bb91ff;">Admin Dashboard - Captured Payments</h3>
+        <button onclick="closeAdminPanel()" style="padding: 5px 10px;">Close</button>
+    </div>
+    <button onclick="clearAdminData()" style="background: #dc
